@@ -8,10 +8,17 @@ import { Sparkles, Zap, Gauge } from 'lucide-react';
 interface WorkEnergySolverProps {
   gravity: GravityConstant;
   onAskTutor?: (question: string) => void;
+  activeTopic?: 'work' | 'conservation' | 'power';
+  onTopicChange?: (topic: 'work' | 'conservation' | 'power') => void;
 }
 
-export const WorkEnergySolver: React.FC<WorkEnergySolverProps> = ({ gravity, onAskTutor }) => {
-  const [topic, setTopic] = useState<'work' | 'conservation' | 'power'>('conservation');
+export const WorkEnergySolver: React.FC<WorkEnergySolverProps> = ({ 
+  gravity, 
+  onAskTutor,
+  activeTopic,
+  onTopicChange 
+}) => {
+  const [topic, setTopic] = useState<'work' | 'conservation' | 'power'>(activeTopic || 'conservation');
 
   // Work inputs
   const [forceVal, setForceVal] = useState<string>('120');
@@ -101,15 +108,38 @@ export const WorkEnergySolver: React.FC<WorkEnergySolverProps> = ({ gravity, onA
     }
   };
 
+  const handleTopicSelect = (newTopic: 'work' | 'conservation' | 'power') => {
+    setTopic(newTopic);
+    onTopicChange?.(newTopic);
+    if (newTopic === 'conservation') {
+      handleSolveConservation();
+    } else if (newTopic === 'work') {
+      handleSolveWork();
+    } else {
+      handleSolvePower();
+    }
+  };
+
+  // Synchronize when activeTopic changes from external navigation
+  React.useEffect(() => {
+    if (activeTopic && activeTopic !== topic) {
+      setTopic(activeTopic);
+      if (activeTopic === 'conservation') {
+        handleSolveConservation();
+      } else if (activeTopic === 'work') {
+        handleSolveWork();
+      } else {
+        handleSolvePower();
+      }
+    }
+  }, [activeTopic]);
+
   return (
     <div className="space-y-6">
       {/* Subtopic Selector */}
       <div className="flex flex-wrap items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
         <button
-          onClick={() => {
-            setTopic('conservation');
-            handleSolveConservation();
-          }}
+          onClick={() => handleTopicSelect('conservation')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
             topic === 'conservation' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}
@@ -119,10 +149,7 @@ export const WorkEnergySolver: React.FC<WorkEnergySolverProps> = ({ gravity, onA
         </button>
 
         <button
-          onClick={() => {
-            setTopic('work');
-            handleSolveWork();
-          }}
+          onClick={() => handleTopicSelect('work')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
             topic === 'work' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}
@@ -131,10 +158,7 @@ export const WorkEnergySolver: React.FC<WorkEnergySolverProps> = ({ gravity, onA
         </button>
 
         <button
-          onClick={() => {
-            setTopic('power');
-            handleSolvePower();
-          }}
+          onClick={() => handleTopicSelect('power')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
             topic === 'power' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}

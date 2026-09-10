@@ -25,6 +25,7 @@ import {
 
 interface UnitConverterProps {
   initialCategory?: string;
+  onCategoryChange?: (category: string) => void;
 }
 
 const CATEGORY_TRANSLATIONS_BN: Record<string, { name: string; siUnitName: string; description: string }> = {
@@ -80,9 +81,16 @@ const CATEGORY_TRANSLATIONS_BN: Record<string, { name: string; siUnitName: strin
   },
 };
 
-export const UnitConverter: React.FC<UnitConverterProps> = ({ initialCategory = 'speed' }) => {
+export const UnitConverter: React.FC<UnitConverterProps> = ({ initialCategory = 'speed', onCategoryChange }) => {
   const { t, isBangla, formatNumberLocalized } = useLanguage();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>(initialCategory);
+
+  // Synchronize when initialCategory changes from external navigation
+  React.useEffect(() => {
+    if (initialCategory && initialCategory !== selectedCategoryId) {
+      setSelectedCategoryId(initialCategory);
+    }
+  }, [initialCategory]);
   const [inputValue, setInputValue] = useState<string>('100');
   const [fromUnitId, setFromUnitId] = useState<string>('km_h');
   const [toUnitId, setToUnitId] = useState<string>('m_s');
@@ -113,6 +121,7 @@ export const UnitConverter: React.FC<UnitConverterProps> = ({ initialCategory = 
   // Handle category change: reset from/to units cleanly to sensible defaults
   const handleCategorySelect = (category: UnitCategoryData) => {
     setSelectedCategoryId(category.id);
+    onCategoryChange?.(category.id);
     if (category.units.length >= 2) {
       const baseUnit = category.units.find((u) => u.id === category.baseUnitId) || category.units[0];
       const otherUnit = category.units.find((u) => u.id !== baseUnit.id) || category.units[1];

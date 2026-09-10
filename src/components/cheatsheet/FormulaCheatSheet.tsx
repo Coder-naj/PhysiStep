@@ -222,11 +222,22 @@ const FORMULA_DATABASE: FormulaCard[] = [
   },
 ];
 
-export const FormulaCheatSheet: React.FC = () => {
+interface FormulaCheatSheetProps {
+  activeTopic?: string;
+  onTopicChange?: (topic: string) => void;
+}
+
+export const FormulaCheatSheet: React.FC<FormulaCheatSheetProps> = ({ activeTopic, onTopicChange }) => {
   const { t, isBangla } = useLanguage();
   const [search, setSearch] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState<string>('All');
+  const [selectedTopic, setSelectedTopic] = useState<string>(activeTopic || 'All');
   const [copiedFormula, setCopiedFormula] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (activeTopic && activeTopic !== selectedTopic) {
+      setSelectedTopic(activeTopic);
+    }
+  }, [activeTopic]);
 
   const filterOptions = [
     { key: 'All', label: t.filterAll },
@@ -287,7 +298,10 @@ export const FormulaCheatSheet: React.FC = () => {
           {filterOptions.map((opt) => (
             <button
               key={opt.key}
-              onClick={() => setSelectedTopic(opt.key)}
+              onClick={() => {
+                setSelectedTopic(opt.key);
+                onTopicChange?.(opt.key);
+              }}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition border cursor-pointer ${
                 selectedTopic === opt.key
                   ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-bold shadow'

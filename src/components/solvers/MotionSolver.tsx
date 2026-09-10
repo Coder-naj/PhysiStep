@@ -9,10 +9,17 @@ import { ArrowRight, Compass, Flame, Play, Sparkles } from 'lucide-react';
 interface MotionSolverProps {
   gravity: GravityConstant;
   onAskTutor?: (question: string) => void;
+  activeSubtopic?: '1d' | 'projectile' | 'circular';
+  onSubtopicChange?: (subtopic: '1d' | 'projectile' | 'circular') => void;
 }
 
-export const MotionSolver: React.FC<MotionSolverProps> = ({ gravity, onAskTutor }) => {
-  const [subtopic, setSubtopic] = useState<'1d' | 'projectile' | 'circular'>('1d');
+export const MotionSolver: React.FC<MotionSolverProps> = ({ 
+  gravity, 
+  onAskTutor,
+  activeSubtopic,
+  onSubtopicChange 
+}) => {
+  const [subtopic, setSubtopic] = useState<'1d' | 'projectile' | 'circular'>(activeSubtopic || '1d');
 
   // 1D State
   const [u1D, setU1D] = useState<string>('0');
@@ -99,15 +106,34 @@ export const MotionSolver: React.FC<MotionSolverProps> = ({ gravity, onAskTutor 
     }
   };
 
+  const handleSubtopicSelect = (newSubtopic: '1d' | 'projectile' | 'circular') => {
+    setSubtopic(newSubtopic);
+    onSubtopicChange?.(newSubtopic);
+    if (newSubtopic === '1d') {
+      handleSolve1D();
+    } else if (newSubtopic === 'projectile') {
+      handleSolveProjectile();
+    }
+  };
+
+  // Synchronize when activeSubtopic changes from external navigation
+  React.useEffect(() => {
+    if (activeSubtopic && activeSubtopic !== subtopic) {
+      setSubtopic(activeSubtopic);
+      if (activeSubtopic === '1d') {
+        handleSolve1D();
+      } else if (activeSubtopic === 'projectile') {
+        handleSolveProjectile();
+      }
+    }
+  }, [activeSubtopic]);
+
   return (
     <div className="space-y-6">
       {/* Subtopic Navigation */}
       <div className="flex flex-wrap items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
         <button
-          onClick={() => {
-            setSubtopic('1d');
-            handleSolve1D();
-          }}
+          onClick={() => handleSubtopicSelect('1d')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
             subtopic === '1d' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}
@@ -116,10 +142,7 @@ export const MotionSolver: React.FC<MotionSolverProps> = ({ gravity, onAskTutor 
         </button>
 
         <button
-          onClick={() => {
-            setSubtopic('projectile');
-            handleSolveProjectile();
-          }}
+          onClick={() => handleSubtopicSelect('projectile')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${
             subtopic === 'projectile' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}

@@ -8,10 +8,17 @@ import { Sparkles, Sliders } from 'lucide-react';
 interface ForceSolverProps {
   gravity: GravityConstant;
   onAskTutor?: (question: string) => void;
+  activeMode?: 'flat_friction' | 'inclined_plane';
+  onModeChange?: (mode: 'flat_friction' | 'inclined_plane') => void;
 }
 
-export const ForceSolver: React.FC<ForceSolverProps> = ({ gravity, onAskTutor }) => {
-  const [mode, setMode] = useState<'flat_friction' | 'inclined_plane'>('flat_friction');
+export const ForceSolver: React.FC<ForceSolverProps> = ({ 
+  gravity, 
+  onAskTutor,
+  activeMode,
+  onModeChange 
+}) => {
+  const [mode, setMode] = useState<'flat_friction' | 'inclined_plane'>(activeMode || 'flat_friction');
 
   // Flat Surface State
   const [massFlat, setMassFlat] = useState<string>('20');
@@ -93,15 +100,34 @@ export const ForceSolver: React.FC<ForceSolverProps> = ({ gravity, onAskTutor })
     }
   };
 
+  const handleModeSelect = (newMode: 'flat_friction' | 'inclined_plane') => {
+    setMode(newMode);
+    onModeChange?.(newMode);
+    if (newMode === 'flat_friction') {
+      handleSolveFlat();
+    } else {
+      handleSolveIncline();
+    }
+  };
+
+  // Synchronize when activeMode changes from external navigation
+  React.useEffect(() => {
+    if (activeMode && activeMode !== mode) {
+      setMode(activeMode);
+      if (activeMode === 'flat_friction') {
+        handleSolveFlat();
+      } else {
+        handleSolveIncline();
+      }
+    }
+  }, [activeMode]);
+
   return (
     <div className="space-y-6">
       {/* Subtopic Switcher */}
       <div className="flex flex-wrap items-center gap-2 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
         <button
-          onClick={() => {
-            setMode('flat_friction');
-            handleSolveFlat();
-          }}
+          onClick={() => handleModeSelect('flat_friction')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
             mode === 'flat_friction' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}
@@ -110,10 +136,7 @@ export const ForceSolver: React.FC<ForceSolverProps> = ({ gravity, onAskTutor })
         </button>
 
         <button
-          onClick={() => {
-            setMode('inclined_plane');
-            handleSolveIncline();
-          }}
+          onClick={() => handleModeSelect('inclined_plane')}
           className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
             mode === 'inclined_plane' ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20' : 'text-slate-400 hover:text-white'
           }`}

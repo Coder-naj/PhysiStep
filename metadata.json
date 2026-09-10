@@ -1,6 +1,6 @@
 {
   "name": "Remix PhysiStep - High School Physics Math Solver",
-  "description": "Bilingual (Bangla \u0026 English) step-by-step physics solver with high-contrast light and dark mode, practice formula quiz with real-time validation, printable PDF reports, unit converter, and interactive simulators for Motion, Force, Work, Power \u0026 Energy.",
+  "description": "Bilingual (Bangla & English) step-by-step physics solver with recently used tools tracking (last 20 tools accessed), high-contrast light and dark mode, practice formula quiz with real-time validation, printable PDF reports, unit converter, and interactive simulators for Motion, Force, Work, Power & Energy.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
