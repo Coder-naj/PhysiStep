@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Zoom is intentionally NOT disabled (accessibility / WCAG 1.4.4). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!--CSP-->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>PhysiStep | High School Physics Math Solver & Simulator</title>
+    <meta name="description" content="Step-by-step math solver, interactive simulations, and AI tutor for Motion, Force, Work, Power & Energy." />
+
+    <meta name="theme-color" content="#020617" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="PhysiStep" />
+
+    <!-- iOS / iPadOS "Add to Home Screen" -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PhysiStep" />
+    <link rel="apple-touch-icon" href="%BASE_URL%icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%icons/favicon-32.png" />
+  </head>
+  <body class="bg-slate-950 text-slate-100 antialiased min-h-screen">
+    <noscript>PhysiStep needs JavaScript enabled.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
